@@ -15,12 +15,17 @@ import { CustomInput } from "../../UI/CustomInput";
 import { loginValidationSchema } from "../../validation/login";
 import loginService from "../../service/auth/authService";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
+/**
+ * Tela de Login
+ * Agora integrada com o AuthContext para gerenciar o estado de autenticação
+ */
 export default function Login() {
   const {
     control,
@@ -33,11 +38,26 @@ export default function Login() {
 
   const router = useRouter();
 
+  // Obtém a função para atualizar o estado de autenticação do contexto
+  const { setAuthenticated } = useAuth();
+
+  /**
+   * Função executada ao submeter o formulário de login
+   */
   const submitForm = async (data: LoginFormData) => {
     try {
+      // 1. Chama o serviço de login que salva o token no secure store
       const user = await loginService.login(data.email, data.password);
+
       if (user) {
         console.log("Login successful:", user);
+
+        // 2. IMPORTANTE: Atualiza o contexto para marcar o usuário como autenticado
+        // Isso permite que o AuthContext saiba que o usuário está logado
+        // e não o redirecione de rotas protegidas
+        setAuthenticated(true);
+
+        // 3. Redireciona para a tela principal (dash)
         router.replace("/dash");
       }
     } catch (error) {

@@ -8,35 +8,27 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { useAuth } from "../../../contexts/AuthContext";
 import * as secureStore from "expo-secure-store";
 
+/**
+ * Tela de Settings - ROTA PROTEGIDA
+ * Esta tela só pode ser acessada por usuários autenticados
+ * O AuthContext verifica automaticamente e redireciona para login se necessário
+ */
 export default function Settings() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = await secureStore.getItemAsync("accessToken");
+  // Obtém os estados e funções do contexto de autenticação
+  // isLoading: indica se ainda está verificando o token
+  // isAuthenticated: indica se o usuário está autenticado
+  // setAuthenticated: função para atualizar o estado de autenticação
+  const { isLoading, isAuthenticated, setAuthenticated } = useAuth();
 
-        if (!token) {
-          Alert.alert("Erro ao verificar autenticação.");
-
-          router.replace("/login");
-        } else {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        Alert.alert("Erro ao verificar autenticação.");
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
+  /**
+   * Enquanto está verificando o token (isLoading = true),
+   * exibe um loading para não mostrar conteúdo antes da verificação
+   */
   if (isLoading) {
     return (
       <View style={styles.container}>
@@ -45,14 +37,27 @@ export default function Settings() {
     );
   }
 
+  /**
+   * Se chegou aqui, significa que:
+   * 1. Já verificou o token (isLoading = false)
+   * 2. O usuário está autenticado (senão teria sido redirecionado pelo AuthContext)
+   */
   return (
     <View style={styles.container}>
       <Text style={{ color: "#fff" }}>Settings Screen</Text>
 
+      {/* Botão de Logout */}
       <TouchableOpacity
         style={styles.button}
         onPress={async () => {
+          // 1. Remove o token do secure store
           await secureStore.deleteItemAsync("accessToken");
+
+          // 2. Atualiza o contexto para marcar como não autenticado
+          // Isso dispara o useEffect no AuthContext que redireciona para login
+          setAuthenticated(false);
+
+          // 3. Redireciona manualmente para a tela de login
           router.replace("/login");
         }}
       >

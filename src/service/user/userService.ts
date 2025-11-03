@@ -22,9 +22,10 @@ async function getCurrentUser(): Promise<User | null> {
     const token = await secureStore.getItemAsync("accessToken");
     if (!token) return null;
 
-    const response = await api.get("/me", {
+    const response = await api.get("/users", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    
     return response.data;
   } catch (error: any) {
     Alert.alert("Erro", error.message);

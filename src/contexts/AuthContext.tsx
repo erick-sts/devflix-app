@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import * as secureStore from "expo-secure-store";
 import { useRouter, useSegments } from "expo-router";
+import { jwtDecode } from "jwt-decode";
 
 /**
  * Interface que define os dados disponíveis no contexto de autenticação
@@ -14,6 +15,8 @@ interface AuthContextData {
   isLoading: boolean;
   checkAuth: () => Promise<void>;
   setAuthenticated: (value: boolean) => void;
+  user: { id: number; email: string } | null;
+  setUser: (user: { id: number; email: string } | null) => void;
 }
 
 // Criação do contexto de autenticação com valores padrão
@@ -36,18 +39,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Hook que retorna os segmentos da URL atual (ex: ["tabs", "dash", "settings"])
   const segments = useSegments();
 
+  const [user, setUser] = useState<{ id: number; email: string } | null>(null);
+
   /**
    * Função que verifica se o usuário possui um token salvo no secure store
-   * Se houver token, marca como autenticado
+   * Se houver token, marca como autenticado e recupera os dados do usuário
    * Se não houver ou der erro, marca como não autenticado
    */
   const checkAuth = async () => {
     try {
       const token = await secureStore.getItemAsync("accessToken");
-      // !!token converte o token em boolean (true se existir, false se for null)
-      setIsAuthenticated(!!token);
+
+      if (token) {
+        // Token existe, marca como autenticado
+        setIsAuthenticated(true);
+
+        // Decodifica o token para recuperar os dados do usuário
+        const decoded: any = jwtDecode(token);
+        setUser({ id: decoded.sub, email: decoded.email });
+      } else {
+        // Não há token, marca como não autenticado
+        setIsAuthenticated(false);
+        setUser(null);
+      }
     } catch (error) {
       setIsAuthenticated(false);
+      setUser(null);
     } finally {
       // Independente do resultado, marca que terminou de carregar
       setIsLoading(false);
@@ -95,6 +112,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         checkAuth,
         setAuthenticated,
+        user,
+        setUser,
       }}
     >
       {children}

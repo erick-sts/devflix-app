@@ -5,7 +5,7 @@ export default function Layout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarStyle: { backgroundColor: "rgba(0, 0, 0, 0.90)" },
+        tabBarStyle: { backgroundColor: "rgba(0, 0, 0, 0.90)"  },
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "gray",
         headerStyle: { backgroundColor: "rgba(0, 0, 0, 0.90)" },
@@ -16,13 +16,25 @@ export default function Layout() {
       <Tabs.Screen
         name="index"
         options={{
-          tabBarLabel: "Dashboard",
+          tabBarLabel: "Home",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" color={color} size={size} />
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="scheduling"
+        options={{
+          tabBarLabel: "Scheduling",
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="calendar" color={color} size={size} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="settings"
         options={{

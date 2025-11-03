@@ -38,7 +38,6 @@ export default function Register() {
   const router = useRouter();
 
   const submitForm = async (data: RegisterFormData) => {
-    console.log("data");
     try {
       const user = await registerService.register(
         data.name,

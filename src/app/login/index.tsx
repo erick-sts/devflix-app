@@ -14,7 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CustomInput } from "../../UI/CustomInput";
 import { loginValidationSchema } from "../../validation/login";
 import loginService from "../../service/auth/authService";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../contexts/AuthContext";
 
 interface LoginFormData {
@@ -39,7 +39,7 @@ export default function Login() {
   const router = useRouter();
 
   // Obtém a função para atualizar o estado de autenticação do contexto
-  const { setAuthenticated } = useAuth();
+  const { setAuthenticated, setUser } = useAuth();
 
   /**
    * Função executada ao submeter o formulário de login
@@ -56,6 +56,7 @@ export default function Login() {
         // Isso permite que o AuthContext saiba que o usuário está logado
         // e não o redirecione de rotas protegidas
         setAuthenticated(true);
+        setUser(user);
 
         // 3. Redireciona para a tela principal (dash)
         router.replace("/dash");
@@ -137,6 +138,7 @@ export default function Login() {
           >
             <Text style={{ color: "#888" }}>Esqueceu a senha?</Text>
             <Text style={{ color: "#fff" }}>Criar conta</Text>
+            <Link href="/" style={{ color: "#fff" }}>voltar</Link>
           </View>
         </View>
       </TouchableWithoutFeedback>

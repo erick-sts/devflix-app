@@ -23,7 +23,8 @@ export default function Settings() {
   // isLoading: indica se ainda está verificando o token
   // isAuthenticated: indica se o usuário está autenticado
   // setAuthenticated: função para atualizar o estado de autenticação
-  const { isLoading, isAuthenticated, setAuthenticated } = useAuth();
+  // setUser: função para limpar os dados do usuário
+  const { isLoading, isAuthenticated, setAuthenticated, setUser } = useAuth();
 
   /**
    * Enquanto está verificando o token (isLoading = true),
@@ -57,7 +58,10 @@ export default function Settings() {
           // Isso dispara o useEffect no AuthContext que redireciona para login
           setAuthenticated(false);
 
-          // 3. Redireciona manualmente para a tela de login
+          // 3. Limpa os dados do usuário do contexto
+          setUser(null);
+
+          // 4. Redireciona manualmente para a tela de login
           router.replace("/login");
         }}
       >

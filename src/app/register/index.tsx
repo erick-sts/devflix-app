@@ -45,7 +45,6 @@ export default function Register() {
         data.password
       );
 
-      console.log("User registered:", user);
       router.push("/login");
     } catch (error: any) {
       Alert.alert("Erro", error.message);

@@ -50,8 +50,6 @@ export default function Login() {
       const user = await loginService.login(data.email, data.password);
 
       if (user) {
-        console.log("Login successful:", user);
-
         // 2. IMPORTANTE: Atualiza o contexto para marcar o usuário como autenticado
         // Isso permite que o AuthContext saiba que o usuário está logado
         // e não o redirecione de rotas protegidas
